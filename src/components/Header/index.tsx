@@ -1,8 +1,17 @@
 import { Container, Profile } from './styles'
 import { Input } from '../Input'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/Auth.tsx'
 
 export function Header() {
+    const {signOut} = useAuth()
+    const navigate = useNavigate()
+
+    function handleSignOut() {
+        signOut()
+        navigate('/')
+    }
+
     return (
         <Container>
             <Link to={'/'}>
@@ -14,7 +23,11 @@ export function Header() {
             <Profile>
                 <div>
                     <p>Patrick Duarte</p>
-                    <a href="#">Sair</a>
+                    <button 
+                     onClick={handleSignOut}
+                    >
+                        Sair
+                    </button>
                 </div>
 
                 <Link to={'/perfil'}>

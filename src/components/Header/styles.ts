@@ -38,10 +38,11 @@ export const Profile = styled.div<IPropsTheme>`
             white-space: nowrap;
         }
 
-        a {
+        button {
             font-size: 1.4rem;
             font-weight: 400;
             color: ${({theme}) => theme.COLORS.GRAY_100};
+            background: none;
         }
     }
 

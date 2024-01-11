@@ -50,7 +50,7 @@ export const Form = styled.form<IPropsTheme>`
         gap: .8rem;
     }
 
-    > a:last-child {
+    > button:last-child {
         margin-top: 2.4rem;
         align-self: center;
     }

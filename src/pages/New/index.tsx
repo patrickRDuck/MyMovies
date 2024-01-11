@@ -6,7 +6,6 @@ import { Input } from '../../components/Input'
 import { TextArea } from '../../components/TextArea'
 import { NotemItem } from '../../components/NoteItem'
 import { Button } from '../../components/Button'
-import { Link } from 'react-router-dom'
 
 export function New() {
 
@@ -24,9 +23,11 @@ export function New() {
             <Header />
 
             <Content>
-                <Link to={'/'}>
-                    <TextButton Icon={FiArrowLeft} text='Voltar'/>
-                </Link>
+                <TextButton 
+                 Icon={FiArrowLeft} 
+                 text='Voltar'
+                 navigation={-1}
+                />
 
                 <strong>Novo Filme</strong>
 

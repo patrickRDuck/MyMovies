@@ -5,7 +5,6 @@ import { FiArrowLeft } from "react-icons/fi";
 import { Stars } from "../../components/Stars";
 import { CiClock2 } from "react-icons/ci";
 import { Tags } from "../../components/Tags";
-import { Link } from 'react-router-dom'
 
 export function MoviePreview() {
     return(
@@ -13,9 +12,12 @@ export function MoviePreview() {
             <Header />
 
             <Content>
-                <Link to={'/'}>
-                    <TextButton Icon={FiArrowLeft} text='Voltar'/>
-                </Link>
+
+                <TextButton 
+                 Icon={FiArrowLeft} 
+                 text='Voltar'
+                 navigation={-1}
+                />
 
                 <div className="header">
                     <div>

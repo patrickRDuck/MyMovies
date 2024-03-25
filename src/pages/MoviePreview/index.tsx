@@ -2,27 +2,115 @@ import { Container, Content, Profile} from "./styles";
 import { Header } from "../../components/Header";
 import { TextButton } from "../../components/TextButton";
 import { FiArrowLeft } from "react-icons/fi";
+import { MdDelete } from "react-icons/md"
 import { Stars } from "../../components/Stars";
 import { CiClock2 } from "react-icons/ci";
 import { Tags } from "../../components/Tags";
+import { useEffect, useState } from "react";
+import { axios } from "../../services";
+import { useParams, useNavigate} from "react-router-dom";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+
+interface ITags {
+    id: number,
+    note_id: number,
+    user_id: number,
+    name: string
+}
+
+interface IMovie {
+    id: number,
+    title: string,
+    description:  string,
+    rating: number,
+    user_id: number,
+    created_at: Date,
+    updated_at: Date,
+    tags: ITags[]
+}
 
 export function MoviePreview() {
+    const navigate = useNavigate()
+
+    const [date, setDate] = useState<string>()
+    const [time, setTime] = useState<string>()
+    const formatDate = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'numeric', year: 'numeric' })
+
+    const { id: movieId} = useParams()
+    const [movie, setMovie] = useState<IMovie>()
+
+    function handleDeleteNote() {
+        toast("Tem certeza que deseja excluir essa nota?", {
+            action: {
+                label: "Apgar notar",
+                onClick: () => {
+                    axios.delete(`/notes/${movieId}`)
+                    .catch((error: unknown) => {
+                        const axiosError = error as AxiosError
+                        console.error(axiosError.message)
+                    })
+
+                    toast.success("Nota deletada com sucesso")
+                    navigate(-1)
+                }
+            }
+        })
+    }
+
+    useEffect(() => {
+        async function showMovie() {
+            try {
+                const response = await axios.get<IMovie>(`/notes/${movieId}`).catch((error: unknown) => console.log(error))
+    
+               if(typeof response !== "undefined") {
+                setMovie(response.data)
+
+                const created_at = new Date(response.data.created_at)
+                const updated_at = new Date(response.data.updated_at)
+
+                if(created_at > updated_at) {
+                    setDate(String(formatDate.format(created_at)))
+                    setTime(`${String(created_at.getHours()).padStart(2, '0')}:${String(created_at.getMinutes()).padStart(2, '0')}`)
+                } else {
+                    setDate(String(formatDate.format(updated_at)))
+                    setTime(`${String(updated_at.getHours()).padStart(2, '0')}:${String(updated_at.getMinutes()).padStart(2, '0')}`)
+                }
+               } 
+            } catch (error: unknown) {
+                console.log(error)
+            }
+        }
+
+        showMovie()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     return(
         <Container>
-            <Header />
+            <Header withoutInput={true}/>
 
             <Content>
 
-                <TextButton 
-                 Icon={FiArrowLeft} 
-                 text='Voltar'
-                 navigation={-1}
-                />
+                <div id="noteButtons">
+                    <TextButton 
+                     Icon={FiArrowLeft} 
+                     text='Voltar'
+                     navigation={-1}
+                    />
+
+                    <TextButton 
+                     Icon={MdDelete}
+                     text="Deletar"
+                     functionOnClick={handleDeleteNote}
+                    />
+                </div>
+
 
                 <div className="header">
                     <div>
-                        <strong> Interestellar </strong>
-                        <Stars starQuantity={4} large={true}/>
+                        <strong> {movie && movie.title} </strong>
+                        <Stars starQuantity={movie ? movie.rating : 1} large={true}/>
                     </div>
 
                     <div>
@@ -36,16 +124,15 @@ export function MoviePreview() {
                         <span>Por Patrick Duarte</span>
                         <span>
                             <CiClock2 size={16}/>
-                            14/11/2023 às 08:17
+                            {date} às {time}
                         </span>
                     </div>
 
-                    <Tags large={true} titles={["ficção científica", "Drama", "Família"]}/>
+                    <Tags large={true} titles={movie ? movie.tags.map((tag) => tag.name) : []}/>
                 </div>
 
                 <p>
-                    Pragas nas colheitas fizeram a civilização humana regredir para uma sociedade agrária em futuro de data desconhecida. Cooper, ex-piloto da NASA, tem uma fazenda com sua família. Murphy, a filha de dez anos de Cooper, acredita que seu quarto está assombrado por um fantasma que tenta se comunicar com ela. Pai e filha descobrem que o "fantasma" é uma inteligência desconhecida que está enviando mensagens codificadas através de radiação gravitacional, deixando coordenadas em binário que os levam até uma instalação secreta da NASA liderada pelo professor John Brand. O cientista revela que um buraco de minhoca foi aberto perto de Saturno e que ele leva a planetas que podem oferecer condições de sobrevivência para a espécie humana. As "missões Lázaro" enviadas anos antes identificaram três planetas potencialmente habitáveis orbitando o buraco negro Gargântua: Miller, Edmunds e Mann – nomeados em homenagem aos astronautas que os pesquisaram. Brand recruta Cooper para pilotar a nave espacial Endurance e recuperar os dados dos astronautas; se um dos planetas se mostrar habitável, a humanidade irá seguir para ele na instalação da NASA, que é na realidade uma enorme estação espacial. A partida de Cooper devasta Murphy.
-                    <br /> <br />Além de Cooper, a tripulação da Endurance é formada pela bióloga Amelia, filha de Brand; o cientista Romilly, o físico planetário Doyle, além dos robôs TARS e CASE. Eles entram no buraco de minhoca e se dirigem a Miller, porém descobrem que o planeta possui enorme dilatação gravitacional temporal por estar tão perto de Gargântua: cada hora na superfície equivale a sete anos na Terra. Eles entram em Miller e descobrem que é inóspito já que é coberto por um oceano raso e agitado por ondas enormes. Uma onda atinge a tripulação enquanto Amelia tenta recuperar os dados de Miller, matando Doyle e atrasando a partida. Ao voltarem para a Endurance, Cooper e Amelia descobrem que 23 anos se passaram.
+                   {movie && movie.description}
                 </p>
             </Content>
         </Container>

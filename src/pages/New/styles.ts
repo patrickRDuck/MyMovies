@@ -62,6 +62,10 @@ export const Form = styled.form<IPropsTheme>`
             display: flex;
             align-items: center;
             gap: 2.4rem;
+
+            & > div:first-child {
+                margin-left: 3.3rem;
+            }
         }
     }
 

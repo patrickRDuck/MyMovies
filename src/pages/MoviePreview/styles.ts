@@ -24,6 +24,12 @@ export const Content = styled.div<IPropsTheme>`
 
     margin: 0 auto;
 
+    > #noteButtons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
     > .header {
         display: flex;
         flex-direction: column;

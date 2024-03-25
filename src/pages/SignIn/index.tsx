@@ -5,6 +5,7 @@ import { TextButton } from "../../components/TextButton";
 import { FiMail, FiLock } from "react-icons/fi"
 import { useAuth, IParamsSignIn } from "../../hooks/Auth.tsx";
 import { ChangeEvent, useState } from "react";
+import { toast } from "sonner";
 
 export function SignIn() {
     const [email, setEmail] = useState<string | null>()
@@ -47,7 +48,7 @@ export function SignIn() {
                 <Button 
                  text="Entrar"
                  type="button"
-                 onClick={() => {email && password ? handleLogin({email, password}) : alert('preencha todos os campos')}}
+                 onClick={() => {email && password ? handleLogin({email, password}) : toast.error('preencha todos os campos')}}
                 />
 
                 <TextButton 

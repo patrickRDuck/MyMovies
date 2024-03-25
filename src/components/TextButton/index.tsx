@@ -8,22 +8,27 @@ interface INavigateObjectOption {
 interface IProps {
     text: string
     Icon?: JSX.ElementType
-    navigation: string | number
+    navigation?: string | number
     navigationObject?: INavigateObjectOption
+    functionOnClick?: () => void
     [key: string]: unknown
 }
 
-export function TextButton({text, Icon, navigation, navigationObject, ...rest}: IProps) {
+export function TextButton({text, Icon, navigation, navigationObject, functionOnClick, ...rest}: IProps) {
     const navigate = useNavigate()
 
     return(
         <Container 
          onClick={() => {
-             if(typeof navigation === 'number') {
-                navigate(navigation as number)
-             } else {
-                navigate(navigation as string, navigationObject)
-             }
+            if(navigation) {
+                if(typeof navigation === 'number') {
+                   navigate(navigation as number)
+                } else {
+                   navigate(navigation as string, navigationObject)
+                }
+            } else if(functionOnClick) {
+                functionOnClick()
+            }
          }}
          {...rest}
         >

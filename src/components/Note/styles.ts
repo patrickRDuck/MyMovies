@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import { IPropsTheme } from "../../styles/Theme";
+import { Link } from "react-router-dom";
 
-export const Container = styled.div<IPropsTheme>`
+export const Container = styled(Link)<IPropsTheme>`
     width: 100%;
     height: fit-content;
 

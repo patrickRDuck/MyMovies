@@ -44,6 +44,8 @@ export const Avatar = styled.div<IPropsTheme>`
 
         border-radius: 36rem;
         border: 1px solid ${({theme}) => theme.COLORS.GRAY_200};
+
+        object-fit: cover;
     }
 
     > label {

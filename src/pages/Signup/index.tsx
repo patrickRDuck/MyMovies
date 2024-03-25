@@ -6,6 +6,7 @@ import { FiMail, FiLock, FiUser } from "react-icons/fi"
 import { useNavigate} from 'react-router-dom'
 import { ChangeEvent, useState } from "react";
 import {axios} from "../../services/index.ts"
+import { toast } from "sonner";
 
 export function SignUp() {
     const [email, setEmail ] = useState<string | null>(null)
@@ -16,21 +17,21 @@ export function SignUp() {
 
     async function handleRegister() {
         if(!email || !name || !password) {
-            return alert('preencha todos os campos')
+            return toast.warning('preencha todos os campos')
         }
         
         const infoToRegister = {email, name, password}
     
         await axios.post('/users', infoToRegister)
         .then(() => {
-            alert('Cadastro realizado com sucesso')
+            toast.success('Cadastro realizado com sucesso')
             navigate('/')
         })
         .catch((error) => {
             if(error.response) {
-                alert(error.response.data.message)
+                toast.error(error.response.data.message)
             } else {
-                alert("Não foi possível realizar o cadastro")
+                toast.error("Não foi possível realizar o cadastro")
             }
         })
     }

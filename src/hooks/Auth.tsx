@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useContext, useState, useEffect} from "react";
 import { axios } from "../services";
 import { AxiosError, AxiosResponse } from "axios";
-
+import { toast } from "sonner";
 
 interface IProps {
     children: ReactNode
@@ -33,9 +33,15 @@ export interface IParamsSignIn {
     password: string
 }
 
+interface IParamsUpdateDataUser {
+    user: IUser,
+    avatarFile?: File | null
+}
+
 export interface IValueContext {
     signIn: ({ email, password }: IParamsSignIn) => void,
     signOut: () => void,
+    updateDataUser: ({user, avatarFile}: IParamsUpdateDataUser) => Promise<void>
     user: IUser
 }
 
@@ -52,15 +58,17 @@ function AuthProvider( { children }: IProps) {
             localStorage.setItem('@MyMovies:token', token)
             localStorage.setItem('@MyMovies:user', JSON.stringify(user))
 
+            axios.defaults.headers.common.Authorization = `Bearer ${token}`
+
             setData({token, user})
 
         } catch(error: unknown) {
             const axiosError = error as AxiosError<IDataAxiosResponseError>
 
             if(axiosError) {
-                alert(axiosError.response?.data.message)
+                toast.error(axiosError.response?.data.message)
             } else {
-                alert("Não foi possível realizar o login")
+                toast.error("Não foi possível realizar o login")
             }
         }
     }
@@ -72,6 +80,33 @@ function AuthProvider( { children }: IProps) {
         setData(null)
     }
 
+    async function updateDataUser({user, avatarFile}: IParamsUpdateDataUser) {
+        try {
+            if(avatarFile) {
+                const fileUploadForm = new FormData()
+                fileUploadForm.append("avatar", avatarFile)
+
+                const response = await axios.patch<IUser>("/users/avatar", fileUploadForm)
+                console.log(response)
+                user.avatar = response.data.avatar
+            }
+
+            await axios.put("users", user)
+            localStorage.setItem('@MyMovies:user', JSON.stringify(user))
+
+            setData({token: (data as IDataAxiosResponse).token, user})
+            toast.success("Usuário atualizado com sucesso!")
+        } catch(error: unknown) {
+            const axiosError = error as AxiosError<IDataAxiosResponseError>
+
+            if(axiosError.response) {
+                toast.error(axiosError.response.data.message)
+            } else {
+                toast.error("Não foi possível atualizar os dados da conta")
+            }
+        }
+    }
+
     useEffect(() => {
         const tokenStorage = localStorage.getItem('@MyMovies:token')
         const userStorage = localStorage.getItem('@MyMovies:user')
@@ -81,6 +116,8 @@ function AuthProvider( { children }: IProps) {
                 token: tokenStorage,
                 user: JSON.parse(userStorage)
             })
+
+            axios.defaults.headers.common.Authorization = `Bearer ${tokenStorage}`
         }
     }, [])
 
@@ -89,7 +126,8 @@ function AuthProvider( { children }: IProps) {
          value={{
              user: data && data.user,
              signIn,
-             signOut
+             signOut,
+             updateDataUser
          }}
         >
             {children}

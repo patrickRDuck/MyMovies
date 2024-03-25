@@ -1,7 +1,11 @@
 import styled from "styled-components";
 import { IPropsTheme } from "../../styles/Theme";
 
-export const Container = styled.div<IPropsTheme>`
+interface IProps extends IPropsTheme {
+    $withoutInput: boolean
+}
+
+export const Container = styled.div<IProps>`
     grid-area: header;
 
     width: 100%;
@@ -13,6 +17,7 @@ export const Container = styled.div<IPropsTheme>`
 
     display: flex;
     align-items: center;
+    justify-content: ${({$withoutInput}) => $withoutInput ? "space-between;" : "baseline"};
     gap: 6.4rem;
 
     > a h1 {

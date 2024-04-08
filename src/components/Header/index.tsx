@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/Auth.tsx'
 import { ChangeEvent } from 'react'
 import userProfileImage from '../../assets/user.png'
+import { axios } from '../../services/index.ts'
 
 interface IHeaderProps {
     withoutInput?: boolean
@@ -14,7 +15,7 @@ export function Header({withoutInput = false, functionOnChange}: IHeaderProps) {
     const {signOut, user } = useAuth()
     const navigate = useNavigate()
 
-    const avatarURL = user.avatar ? `http://localhost:3333/files/${user.avatar}` : userProfileImage
+    const avatarURL = user.avatar ? `${axios.defaults.baseURL}/files/${user.avatar}` : userProfileImage
 
     const name = user.name.split(" ")
 
